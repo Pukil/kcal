@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+Welcome on your profile page {{ user }}!<br>
+    Here is waht you ate so far today:<br>
+    Breakfast:<br>
+        Tutaj przekazać listę dodanych posiłkow w kategorii breakfast<br>
+    Dinner:<br>
+    Lunch:<br>
+    Other:<br>
+
+    Here you can:<br>
+    <ol>
+    <li><a href="{% url 'add-ingredient' %}">Add ingredient</a></li>
+    <li><a href="{% url 'add-meal' %}">Add meal</a></li>
+    <li><a href="{% url 'add-activity' %}">Add activity</a></li>
+    </ol>
+
+
+{% endblock %}
