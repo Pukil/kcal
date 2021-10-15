@@ -3,10 +3,11 @@
     <form method="post">
     {% csrf_token %}
     {% block form %}
-    {{ form.as_p }}
+        {{ form.as_p }}
     {% endblock %}
     <input type="submit">
     </form>
+    {{ error_message }}
 
 
 {% endblock %}

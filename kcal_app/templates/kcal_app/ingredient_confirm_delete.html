@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content%}
+    Do you really want to delete {{ object.name }}?<br>
+    <a href="/ingredients/" class="button"><button class="btn-danger">No, take me back</button></a>
+    <form method="post">
+    {% csrf_token %}
+
+    <input type="submit" value="Yes, delete" class="btn-success">
+    </form>
+
+{% endblock %}
