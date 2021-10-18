@@ -10,6 +10,7 @@ class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
+
 class AddUserAndProfileForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
@@ -17,6 +18,7 @@ class AddUserAndProfileForm(forms.Form):
     name = forms.CharField(max_length=64)
     age = forms.IntegerField(min_value=1)
     weight = forms.IntegerField(min_value=1)
+
 
 class AddDayForm(forms.ModelForm):
     class Meta:
@@ -30,22 +32,25 @@ class AddDayForm(forms.ModelForm):
 class AddIngredientToMealForm(forms.ModelForm):
     class Meta:
         model = MealIngredientWeight
-        exclude = ['meal']
+        fields = "__all__"
+        # exclude = ['meal']
+
 
 class ActivityTimeForm(forms.ModelForm):
     class Meta:
         model = ActivityDayTime
         fields = "__all__"
 
+
 class EditDayForm(forms.ModelForm):
 
-    def __init__(self, *args,user=None, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
         meals = Meal.objects.filter(user=user)
         self.fields['meals'].queryset = meals
 
     class Meta:
-        model= Day
+        model = Day
         exclude = ['profile', 'date', 'base_kcal']
         widgets = {
             'meals': forms.CheckboxSelectMultiple,
@@ -57,13 +62,15 @@ class AddMealForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddMealForm, self).__init__(*args, **kwargs)
 
-
     class Meta:
         model = Meal
         exclude = ['user', 'ingredients']
 
 
-
-
-
-
+class EditMealForm(forms.ModelForm):
+    class Meta:
+        model = Meal
+        fields = ['ingredients', 'name']
+        widgets = {
+            'ingredients': forms.CheckboxSelectMultiple
+        }

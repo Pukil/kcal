@@ -20,7 +20,7 @@ from kcal_app.views import LandingPageView, AddIngredientView, AddMealView, Dash
     SignUp, AddActivity, IngredientsListView, ActivityListView, AddDayView, AddIngredientToMealView, EditMealView, \
     DeleteMealView, EditIngredientView, DeleteIngredientView, EditActivityView, DeleteActivityView, EditDayView, \
     DeleteDayView, CreatePlanView, EditPlanView, DeletePlanView, ShowAllPlans, DayInfoView, ActivityTimeView, \
-    EditActivityTime, EditProfileView, DeleteActivityTime
+    EditActivityTime, EditProfileView, DeleteActivityTime, EditIngredientWeight, DeleteIngredientWeight
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,6 +37,8 @@ urlpatterns = [
     path(r'dashboard/', DashboardView.as_view(), name="profile-page"),
     path('add_activity/', AddActivity.as_view(), name="add-activity"),
     path('ingredients/', IngredientsListView.as_view(), name="ingredients"),
+    path('edit_weight/<int:pk>/', EditIngredientWeight.as_view(), name="edit-weight"),
+    path('delete_weight/<int:pk>/', DeleteIngredientWeight.as_view(), name="delete-weight"),
     ### activity urls
     path('activities/',ActivityListView.as_view(), name="activities"),
     path('activity_edit/<int:pk>/', EditActivityView.as_view(), name="edit-activity"),

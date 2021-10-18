@@ -18,6 +18,7 @@ class Ingredient(models.Model):
     def calculate_calories_per_1_gram(self):
         return self.proteins * 4 + self.fat * 9 + self.carbs * 4
 
+
 class Meal(models.Model):
     ingredients = models.ManyToManyField(Ingredient, through='MealIngredientWeight', blank=True)
     name = models.CharField(max_length=64)
@@ -31,7 +32,7 @@ class Meal(models.Model):
         ings = MealIngredientWeight.objects.filter(meal=self)
         for ing in ings:
             tot_kcal += ing.get_cal()
-        return tot_kcal
+        return round(tot_kcal)
 
 
 class MealIngredientWeight(models.Model):
@@ -57,6 +58,7 @@ class Day(models.Model):
         daily_kcal = 0
         for meal in self.meals.all():
             daily_kcal += meal.total_kcal()
+        return daily_kcal
 
     def __str__(self):
         return str(self.date)
@@ -76,7 +78,7 @@ class ActivityDayTime(models.Model):
     time_in_minutes = models.IntegerField()
 
     def kcal_burned(self):
-        return self.activity.burned_kcal * self.time_in_minutes
+        return round(self.activity.burned_kcal * self.time_in_minutes)
 
 
 class Profile(models.Model):

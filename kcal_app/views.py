@@ -10,24 +10,25 @@ from django.views import View
 # Create your views here.
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from kcal_app.forms import LoginForm, AddUserAndProfileForm, AddDayForm, AddIngredientToMealForm, \
-    EditDayForm, AddMealForm, ActivityTimeForm
-from kcal_app.models import Ingredient, Meal, Profile, Activity, Day, Plan, ActivityDayTime
+    EditDayForm, AddMealForm, ActivityTimeForm, EditMealForm
+from kcal_app.models import Ingredient, Meal, Profile, Activity, Day, Plan, ActivityDayTime, MealIngredientWeight
 
-#TODO
+
+# TODO
 # 1 Zrobic bardziej user friendly dodawanie posilkow do dnia
 # 2
-
 
 
 class LandingPageView(View):
     def get(self, request):
         return render(request, 'mainpage.html')
 
+
 class EditProfileView(LoginRequiredMixin, UpdateView):
     login_url = '/login/'
     redirect_field_name = 'next'
     model = Profile
-    fields = ["age","weight","plan"]
+    fields = ["age", "weight", "plan"]
     template_name = "kcal_app/activity_form.html"
     success_url = reverse_lazy("profile-page")
 
@@ -59,11 +60,13 @@ class AddDayView(LoginRequiredMixin, View):
             }
             return render(request, "form.html", ctx)
 
+
 class DayInfoView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         day = Day.objects.get(profile=Profile.objects.get(user=request.user), pk=pk)
         kcal_remaining = day.base_kcal + day.profile.plan.kcal_diff
+        # ing_id = MealIngredientWeight.objects.filter(meal_id=day.meals.filter())
         for meal in day.meals.all():
             kcal_remaining -= meal.total_kcal()
         for activity in day.activitydaytime_set.all():
@@ -72,8 +75,10 @@ class DayInfoView(LoginRequiredMixin, View):
             'day': day,
             'meals': day.meals.all(),
             'activities': day.activitydaytime_set.all(),
-            'kcal_remaining': kcal_remaining
+            'kcal_remaining': round(kcal_remaining),
+            # 'ing_id': ing_id,
         })
+
 
 
 
@@ -85,12 +90,10 @@ class EditDayView(LoginRequiredMixin, UpdateView):
     template_name = 'kcal_app/ingredient_update_form.html'
     success_url = "/dashboard/"
 
-
     def get_form(self, form_class=None):
         super().get_form()
         form_class = self.get_form_class()
         return form_class(user=self.request.user, **self.get_form_kwargs())
-
 
 
 class DeleteDayView(LoginRequiredMixin, DeleteView):
@@ -126,6 +129,24 @@ class DeleteIngredientView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("ingredients")
 
 
+class EditIngredientWeight(LoginRequiredMixin, UpdateView):
+    login_url = '/login/'
+    redirect_field_name = 'next'
+    model = MealIngredientWeight
+    template_name = "kcal_app/ingredient_update_form.html"
+    form_class = AddIngredientToMealForm
+    success_url = reverse_lazy("profile-page")
+
+
+
+
+class DeleteIngredientWeight(LoginRequiredMixin, DeleteView):
+    login_url = '/login/'
+    redirect_field_name = 'next'
+    model = MealIngredientWeight
+    success_url = reverse_lazy("profile-page")
+
+
 ########### MEAL #############
 class AddMealView(LoginRequiredMixin, CreateView):
     login_url = '/login/'
@@ -142,7 +163,6 @@ class AddMealView(LoginRequiredMixin, CreateView):
 
 
 class AddIngredientToMealView(LoginRequiredMixin, View):
-
     login_url = '/login/'
     redirect_field_name = 'next'
 
@@ -161,12 +181,13 @@ class AddIngredientToMealView(LoginRequiredMixin, View):
             return HttpResponse("błąd")
 
 
+
 class EditMealView(LoginRequiredMixin, UpdateView):
     login_url = '/login/'
     redirect_field_name = 'next'
     model = Meal
-    fields = ["ingredients", 'name']
-
+    form_class = EditMealForm
+    # fields = ["ingredients", 'name']
     template_name_suffix = '_update_form'
     success_url = "/dashboard/"
 
@@ -176,7 +197,6 @@ class DeleteMealView(LoginRequiredMixin, DeleteView):
     redirect_field_name = 'next'
     model = Meal
     success_url = "/dashboard/"
-
 
 
 ########### PLAN #############
@@ -208,7 +228,6 @@ class DeletePlanView(LoginRequiredMixin, DeleteView):
     login_url = '/login/'
     redirect_field_name = 'next'
     model = Plan
-
 
 
 class AddActivity(LoginRequiredMixin, CreateView):
@@ -257,7 +276,6 @@ class ActivityTimeView(LoginRequiredMixin, View):
             return HttpResponse("błąd")
 
 
-
 class EditActivityTime(LoginRequiredMixin, UpdateView):
     login_url = '/login/'
     redirect_field_name = 'next'
@@ -266,11 +284,11 @@ class EditActivityTime(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("profile-page")
     template_name = "kcal_app/activity_form.html"
 
+
 class DeleteActivityTime(LoginRequiredMixin, DeleteView):
     model = ActivityDayTime
     template_name = "kcal_app/activity_confirm_delete.html"
     success_url = reverse_lazy("profile-page")
-
 
 
 class IngredientsListView(ListView):
@@ -285,15 +303,11 @@ class DashboardView(LoginRequiredMixin, View):
     login_url = '/login/'
     redirect_field_name = 'next'
 
-    def get(self, request, date=datetime.datetime.today()):
+    def get(self, request):
         days = Day.objects.filter(profile=Profile.objects.get(user=request.user)).order_by('-date')
-        meals = Meal.objects.filter(user=request.user)
-        ingredients = []
         ctx = {
             'profile': Profile.objects.get(user=request.user),
             'days': days,
-            'meals': meals,
-            'ingredients': ingredients
         }
         return render(request, 'dashboard.html', ctx)
 

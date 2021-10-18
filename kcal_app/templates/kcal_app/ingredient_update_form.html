@@ -1,1 +1,18 @@
-{% include 'form.html' %}
+{% extends 'base.html' %}
+{% block content %}
+    <a href="/add_meal/">Add meal</a>
+
+    <a href="{% url 'add-activity' %}" >Add Activity</a>
+    <form method="post">
+    {% csrf_token %}
+    {% block form %}
+
+        {{ form.as_table }}
+    {% endblock %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <input type="submit">
+    </form>
+    {{ error_message }}
+
+
+{% endblock %}
