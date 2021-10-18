@@ -66,7 +66,8 @@ class DayInfoView(LoginRequiredMixin, View):
     def get(self, request, pk):
         day = Day.objects.get(profile=Profile.objects.get(user=request.user), pk=pk)
         kcal_remaining = day.base_kcal + day.profile.plan.kcal_diff
-        # ing_id = MealIngredientWeight.objects.filter(meal_id=day.meals.filter())
+        # object = MealIngredientWeight.objects.get(id=self.kwargs['pk'])
+        # ing_id = MealIngredientWeight.objects.filter(meal_id=object.meal.pk, ingredient=object.ingredient.pk)
         for meal in day.meals.all():
             kcal_remaining -= meal.total_kcal()
         for activity in day.activitydaytime_set.all():
@@ -167,7 +168,7 @@ class AddIngredientToMealView(LoginRequiredMixin, View):
     redirect_field_name = 'next'
 
     def get(self, request, id):
-        form = AddIngredientToMealForm()
+        form = AddIngredientToMealForm(initial={"meal": Meal.objects.get(pk=id) })
         return render(request, 'add_to_meal.html', {'form': form})
 
     def post(self, request, id):

@@ -32,8 +32,7 @@ class AddDayForm(forms.ModelForm):
 class AddIngredientToMealForm(forms.ModelForm):
     class Meta:
         model = MealIngredientWeight
-        fields = "__all__"
-        # exclude = ['meal']
+        exclude = ['meal']
 
 
 class ActivityTimeForm(forms.ModelForm):

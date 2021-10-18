@@ -5,11 +5,6 @@
 </div>
     <div {% if kcal_remaining >= 0 %}class="text-center text-success"{% else %}class="text-center text-danger"{% endif %}>
 <h2>Kcal remaining: {{ kcal_remaining }}</h2>
-    <ul>
-{#        {% for queryset in ing_id %}#}
-        <li>{{ ing_id }}</li>
-{#        {% endfor %}#}
-    </ul>
 </div>
      <div class="d-flex flex-column flex-shrink-0">
          <p><strong>Meal list:</strong> </p>
@@ -22,25 +17,25 @@
     <td>   </td>
     </th>
         {% for meal in meals %}
-            {{ meal.id }}
     <tr>
     <td>{{ forloop.counter }}</td>
         <td>{{ meal }} </td>
     <td>
         <ul>
-            {% for ingredient in meal.ingredients.all %}
-                {{ ingredient.pk }}
-                <li><a href="{% url 'edit-weight' 1 %}">{{ ingredient }}</a>
-                    <a href="{% url "delete-weight" ingredient.pk %}"><button class="btn-danger px-2 py-0">-</button></a>
+            {% for item in meal.mealingredientweight_set.all %}
+                <li><a href="{% url 'edit-weight' item.pk %}" >{{ item.ingredient }}</a>
+                    <a href="{% url "delete-weight" item.pk %}"><button class="btn-danger px-2 py-0">-</button></a>
                 </li>
+
                 {% endfor %}
-            <a href="{% url 'add-to-meal' meal.id %}" class="text-white-50"><button class="btn-success px-2 py-0">+</button></a>
+            <a href="{% url 'add-to-meal' meal.pk %}" class="text-white-50"><button class="btn-success px-2 py-0">+</button></a>
         </ul>
     </td>
     <td>{{ meal.total_kcal }}</td>
     <td><a href="{% url 'edit-meal' meal.pk %}" class="btn btn-primary">Edit</a></td>
     <td><a href="{% url 'delete-meal' meal.pk %}" class="btn btn-danger">Delete</a></td>
     </tr>
+
         {% endfor %}
     </table>
      <p><a href="{% url 'edit-day' day.pk%}" class="btn btn-outline-primary">Add meal or activity</a></p>
