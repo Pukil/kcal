@@ -66,6 +66,7 @@ class DayInfoView(LoginRequiredMixin, View):
     def get(self, request, pk):
         day = Day.objects.get(profile=Profile.objects.get(user=request.user), pk=pk)
         kcal_remaining = day.base_kcal + day.profile.plan.kcal_diff
+        # ing_id = MealIngredientWeight.objects.filter(meal_id=day.meals.filter())
         for meal in day.meals.all():
             kcal_remaining -= meal.total_kcal()
         for activity in day.activitydaytime_set.all():
@@ -74,8 +75,11 @@ class DayInfoView(LoginRequiredMixin, View):
             'day': day,
             'meals': day.meals.all(),
             'activities': day.activitydaytime_set.all(),
-            'kcal_remaining': round(kcal_remaining)
+            'kcal_remaining': round(kcal_remaining),
+            # 'ing_id': ing_id,
         })
+
+
 
 
 class EditDayView(LoginRequiredMixin, UpdateView):
@@ -134,6 +138,8 @@ class EditIngredientWeight(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("profile-page")
 
 
+
+
 class DeleteIngredientWeight(LoginRequiredMixin, DeleteView):
     login_url = '/login/'
     redirect_field_name = 'next'
@@ -173,6 +179,7 @@ class AddIngredientToMealView(LoginRequiredMixin, View):
             return redirect('/dashboard/')
         else:
             return HttpResponse("błąd")
+
 
 
 class EditMealView(LoginRequiredMixin, UpdateView):

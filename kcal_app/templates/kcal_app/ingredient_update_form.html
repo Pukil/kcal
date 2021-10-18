@@ -2,7 +2,7 @@
 {% block content %}
     <a href="/add_meal/">Add meal</a>
 
-    <a href>Add Activity</a>
+    <a href="{% url 'add-activity' %}" >Add Activity</a>
     <form method="post">
     {% csrf_token %}
     {% block form %}

@@ -38,7 +38,7 @@ urlpatterns = [
     path('add_activity/', AddActivity.as_view(), name="add-activity"),
     path('ingredients/', IngredientsListView.as_view(), name="ingredients"),
     path('edit_weight/<int:pk>/', EditIngredientWeight.as_view(), name="edit-weight"),
-    path('delete_weight/<int:pk>', DeleteIngredientWeight.as_view(), name="delete-weight"),
+    path('delete_weight/<int:pk>/', DeleteIngredientWeight.as_view(), name="delete-weight"),
     ### activity urls
     path('activities/',ActivityListView.as_view(), name="activities"),
     path('activity_edit/<int:pk>/', EditActivityView.as_view(), name="edit-activity"),

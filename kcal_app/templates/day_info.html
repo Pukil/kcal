@@ -5,6 +5,11 @@
 </div>
     <div {% if kcal_remaining >= 0 %}class="text-center text-success"{% else %}class="text-center text-danger"{% endif %}>
 <h2>Kcal remaining: {{ kcal_remaining }}</h2>
+    <ul>
+{#        {% for queryset in ing_id %}#}
+        <li>{{ ing_id }}</li>
+{#        {% endfor %}#}
+    </ul>
 </div>
      <div class="d-flex flex-column flex-shrink-0">
          <p><strong>Meal list:</strong> </p>
@@ -17,13 +22,15 @@
     <td>   </td>
     </th>
         {% for meal in meals %}
+            {{ meal.id }}
     <tr>
     <td>{{ forloop.counter }}</td>
         <td>{{ meal }} </td>
     <td>
         <ul>
             {% for ingredient in meal.ingredients.all %}
-                <li><a href="{% url 'edit-weight' ingredient.pk %}">{{ ingredient }}</a>
+                {{ ingredient.pk }}
+                <li><a href="{% url 'edit-weight' 1 %}">{{ ingredient }}</a>
                     <a href="{% url "delete-weight" ingredient.pk %}"><button class="btn-danger px-2 py-0">-</button></a>
                 </li>
                 {% endfor %}
