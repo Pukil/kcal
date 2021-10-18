@@ -1,8 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-    <ul>
-{% for object in object_list %}
-<li>{{ object }}</li>
+    <table class="table">
+    <th class="table-primary">
+        <td>Name</td>
+        <td>burned kcal per minute</td>
+    </th>
+    {% for object in object_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ object }} </td>
+            <td>{{ object.burned_kcal }}</td>
+            <td><a href="{% url 'edit-activity' object.pk %}">Edit</a></td>
+            <td><a href="{% url 'delete-activity' object.pk %}">Delete</a></td>
+        </tr>
     {% endfor %}
-    </ul>
+    </table>
 {%  endblock %}

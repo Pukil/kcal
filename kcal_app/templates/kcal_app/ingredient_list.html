@@ -1,8 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-    <ul>
-{% for object in object_list %}
-<li>{{ object }}</li>
+    <table class="table">
+    <th class="table-primary">
+        <td>Name</td>
+        <td>fat per 1 g</td>
+        <td>carbs per 1 g</td>
+        <td>protein per 1 g</td>
+    </th>
+    {% for object in object_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ object }} </td>
+            <td>{{ object.fat }}</td>
+            <td>{{ object.carbs }}</td>
+            <td>{{ object.proteins }}</td>
+            <td><a href="{% url 'edit-ingredient' object.pk %}">Edit</a></td>
+            <td><a href="{% url 'delete-ingredient' object.pk %}">Delete</a></td>
+        </tr>
     {% endfor %}
-    </ul>
+    </table>
 {%  endblock %}
