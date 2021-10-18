@@ -48,6 +48,7 @@ class Day(models.Model):
     meals = models.ManyToManyField(Meal)
     activity = models.ManyToManyField('Activity', blank=True)
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    base_kcal = models.IntegerField(default=2000)
 
     class Meta:
         unique_together = ('date', 'profile')
@@ -109,3 +110,6 @@ class Plan(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField()
     kcal_diff = models.IntegerField()
+
+    def __str__(self):
+        return self.name

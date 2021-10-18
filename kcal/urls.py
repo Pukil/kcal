@@ -20,7 +20,7 @@ from kcal_app.views import LandingPageView, AddIngredientView, AddMealView, Dash
     SignUp, AddActivity, IngredientsListView, ActivityListView, AddDayView, AddIngredientToMealView, EditMealView, \
     DeleteMealView, EditIngredientView, DeleteIngredientView, EditActivityView, DeleteActivityView, EditDayView, \
     DeleteDayView, CreatePlanView, EditPlanView, DeletePlanView, ShowAllPlans, DayInfoView, ActivityTimeView, \
-    EditActivityTime
+    EditActivityTime, EditProfileView, DeleteActivityTime
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +28,7 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(), name='logout'),
     path("signup/", SignUp.as_view(), name='signup'),
     path('', LandingPageView.as_view(), name="main-page"),
+    path('edit_profile/<int:pk>/', EditProfileView.as_view(), name="edit-profile"),
     ### ingredient urls
     path('add_ingredient/', AddIngredientView.as_view(), name="add-ingredient"),
     path('edit_ingredient/<int:pk>/', EditIngredientView.as_view(), name="edit-ingredient"),
@@ -42,6 +43,7 @@ urlpatterns = [
     path('activity_delete/<int:pk>/', DeleteActivityView.as_view(), name="delete-activity"),
     path('activity_time/<int:id>/<int:pk>/', ActivityTimeView.as_view(), name="activity-time"),
     path('edit_activity_time/<int:pk>/', EditActivityTime.as_view(), name="edit-time"),
+    path('delete_activity_time/<int:pk>/', DeleteActivityTime.as_view(), name="delete-time"),
     path('add_day/', AddDayView.as_view(), name="add-day"),
     path('edit_day/<int:pk>/', EditDayView.as_view(), name="edit-day"),
     path('delete_day/<int:pk>/', DeleteDayView.as_view(), name='delete-day'),

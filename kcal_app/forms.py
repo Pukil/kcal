@@ -46,7 +46,7 @@ class EditDayForm(forms.ModelForm):
 
     class Meta:
         model= Day
-        exclude = ['profile', 'date']
+        exclude = ['profile', 'date', 'base_kcal']
         widgets = {
             'meals': forms.CheckboxSelectMultiple,
             'activity': forms.CheckboxSelectMultiple,
