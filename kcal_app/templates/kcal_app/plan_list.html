@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+    <table class="table">
+    <th class="table-primary">
+        <td>Name</td>
+        <td>Description</td>
+        <td>Kcal difference</td>
+    </th>
+    {% for object in object_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ object.name }} </td>
+            <td>{{ object.description }}</td>
+            <td>{{ object.kcal_diff }}</td>
+            <td><a href="{% url 'edit-plan' object.pk %}">Edit</a></td>
+            <td><a href="{% url 'delete-plan' object.pk %}">Delete</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+{%  endblock %}

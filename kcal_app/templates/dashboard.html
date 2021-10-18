@@ -3,17 +3,21 @@
     <div class=" text-center">
         Welcome on your profile page {{ user }}!<br>
     </div>
+    <div>
+    <p>Chosen plan: MIEJSCE NA WYBRANY PLAN/LICZNIK KALORII</p>
+    </div>
 
 <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
 <p class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white">
     Here you can:
 </p>
-
     <ol class="nav nav-pills flex-column mb-auto">
         <li class="nav-item"><a href="{% url 'add-ingredient' %}">Add ingredient</a></li>
         <li class="nav-item"><a href="{% url 'add-meal' %}">Add meal</a></li>
         <li class="nav-item"><a href="{% url 'add-activity' %}">Add activity</a></li>
         <li class="nav-item"><a href="{% url 'add-day' %}">Add day</a></li>
+        <li class="nav-item"><a href="{% url 'create-plan' %}">Add plan</a></li>
+        <li class="nav-item"><a href="{% url 'plan-list' %}">Show plans</a></li>
     </ol>
 </div>
     <p>
@@ -36,7 +40,7 @@
         {% for meal in meals %}
     <tr>
     <td>{{ forloop.counter }}</td>
-        <td>{{ meal }}</td>
+        <td>{{ meal }} </td>
     <td>
         <ul>
             {% for ingredient in meal.ingredients.all %}
@@ -44,7 +48,7 @@
                 {% endfor %}
         </ul>
     </td>
-    <td>{{ total_kcal}}</td>
+    <td>{{ meal.total_kcal }}</td>
     <td><a href="{% url 'add-to-meal' meal.id %}">Add ingredient</a></td>
     <td><a href="{% url 'edit-meal' meal.pk %}">Edit</a></td>
     <td><a href="{% url 'delete-meal' meal.pk %}">Delete</a></td>
@@ -81,7 +85,7 @@
         {% endfor %}
         </ul>
             </td>
-    <td>Tutaj liczba kcal</td>
+    <td>{{ day.daily_kcal }}</td>
     <td><a href="{% url 'edit-day' day.pk %}">Edit</a></td>
     <td><a href="{% url 'delete-day' day.pk %}">Delete</a></td>
     </tr>

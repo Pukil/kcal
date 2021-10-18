@@ -1,4 +1,7 @@
+import datetime
+
 from django import forms
+from django.contrib.auth.models import User
 
 from kcal_app.models import Day, Ingredient, Meal, MealIngredientWeight
 
@@ -28,6 +31,33 @@ class AddIngredientToMealForm(forms.ModelForm):
     class Meta:
         model = MealIngredientWeight
         exclude = ['meal']
+
+class EditDayForm(forms.ModelForm):
+
+    def __init__(self, *args,user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        meals = Meal.objects.filter(user=user)
+        self.fields['meals'].queryset = meals
+
+    class Meta:
+        model= Day
+        exclude = ['profile', 'date']
+        widgets = {
+            'meals': forms.CheckboxSelectMultiple,
+            'activity': forms.CheckboxSelectMultiple,
+        }
+
+
+class AddMealForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddMealForm, self).__init__(*args, **kwargs)
+
+
+    class Meta:
+        model = Meal
+        exclude = ['user', 'ingredients']
+
+
 
 
 

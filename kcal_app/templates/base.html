@@ -10,7 +10,7 @@
     <script src="{% static 'bootstrap5.1.1/bootstrap-5.1.1-dist/js/bootstrap.bundle.min.js' %}"></script>
     <title>Kcal tracker</title>
 </head>
-<body class="col">
+<body>
 <div class="container">
     <div class="row">
         <div class="col text-center">
@@ -25,21 +25,25 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col">
+<div >
+    <div>
         <p>-----------------------------------------------</p>
     </div>
-    <div class="col">
+    <div>
         <a href="{% url 'ingredients' %}">Ingredient list</a>
     </div>
-    <div class="col">
+    <div>
         <a href="{% url 'activities' %}">Activity list</a>
     </div>
-    <div class="col">
-        Your dashboard = <a href="{% url 'profile-page'%}">Dashboard</a>
+    <div>
+        Your dashboard = <a href="{% url 'profile-page'  %}">Dashboard</a>
     </div>
 </div>
-<div class="container">
+<div>
+<br>
+<div>
+        <p>-----------------------------------------------</p>
+    </div>
     {%  block content %}
 
 {% endblock %}

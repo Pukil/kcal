@@ -14,12 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 from kcal_app.views import LandingPageView, AddIngredientView, AddMealView, DashboardView, LoginView, LogoutView, \
     SignUp, AddActivity, IngredientsListView, ActivityListView, AddDayView, AddIngredientToMealView, EditMealView, \
     DeleteMealView, EditIngredientView, DeleteIngredientView, EditActivityView, DeleteActivityView, EditDayView, \
-    DeleteDayView
+    DeleteDayView, CreatePlanView, EditPlanView, DeletePlanView, ShowAllPlans
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,7 +32,7 @@ urlpatterns = [
     path('edit_ingredient/<int:pk>/', EditIngredientView.as_view(), name="edit-ingredient"),
     path('delete_ingredient/<int:pk>/', DeleteIngredientView.as_view(), name="delete-ingredient"),
     path('add_meal/', AddMealView.as_view(), name="add-meal"),
-    path('dashboard/', DashboardView.as_view(), name="profile-page"),
+    path(r'dashboard/', DashboardView.as_view(), name="profile-page"),
     path('add_activity/', AddActivity.as_view(), name="add-activity"),
     path('ingredients/', IngredientsListView.as_view(), name="ingredients"),
     ### activity urls
@@ -44,5 +44,9 @@ urlpatterns = [
     path('delete_day/<int:pk>/', DeleteDayView.as_view(), name='delete-day'),
     path('add_to_meal/<int:id>/', AddIngredientToMealView.as_view(), name="add-to-meal"),
     path('edit_meal/<int:pk>/', EditMealView.as_view(), name="edit-meal"),
-    path('delete_meal/<int:pk>/', DeleteMealView.as_view(), name="delete-meal")
+    path('delete_meal/<int:pk>/', DeleteMealView.as_view(), name="delete-meal"),
+    path('add_plan/', CreatePlanView.as_view(), name="create-plan"),
+    path('edit_plan/<int:pk>/', EditPlanView.as_view(), name="edit-plan"),
+    path('delete_plan/<int:pk>/', DeletePlanView.as_view(), name="delete-plan"),
+    path('show_plans/', ShowAllPlans.as_view(), name="plan-list")
 ]
