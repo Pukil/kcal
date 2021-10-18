@@ -44,6 +44,7 @@ class MealIngredientWeight(models.Model):
         return self.weight * self.ingredient.calculate_calories_per_1_gram()
 
 
+
 class Day(models.Model):
     date = models.DateField()
     meals = models.ManyToManyField(Meal)
