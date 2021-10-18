@@ -34,9 +34,6 @@ class Meal(models.Model):
         return tot_kcal
 
 
-
-
-
 class MealIngredientWeight(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
@@ -47,7 +44,6 @@ class MealIngredientWeight(models.Model):
 
 
 class Day(models.Model):
-    name = models.CharField(max_length=2, default="")
     date = models.DateField()
     meals = models.ManyToManyField(Meal)
     activity = models.ManyToManyField('Activity', blank=True)
@@ -61,6 +57,9 @@ class Day(models.Model):
         for meal in self.meals.all():
             daily_kcal += meal.total_kcal()
 
+    def __str__(self):
+        return str(self.date)
+
 
 class Activity(models.Model):
     name = models.CharField(max_length=128)
@@ -70,11 +69,21 @@ class Activity(models.Model):
         return self.name
 
 
+class ActivityDayTime(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    day = models.ForeignKey(Day, on_delete=models.CASCADE)
+    time_in_minutes = models.IntegerField()
+
+    def kcal_burned(self):
+        return self.activity.burned_kcal * self.time_in_minutes
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, null=True)
     age = models.IntegerField(null=True)
     weight = models.IntegerField(null=True)
+    plan = models.ForeignKey('Plan', on_delete=models.CASCADE, default=None, null=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -100,4 +109,3 @@ class Plan(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField()
     kcal_diff = models.IntegerField()
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, default=None)

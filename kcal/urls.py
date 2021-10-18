@@ -19,7 +19,8 @@ from django.urls import path, include, re_path
 from kcal_app.views import LandingPageView, AddIngredientView, AddMealView, DashboardView, LoginView, LogoutView, \
     SignUp, AddActivity, IngredientsListView, ActivityListView, AddDayView, AddIngredientToMealView, EditMealView, \
     DeleteMealView, EditIngredientView, DeleteIngredientView, EditActivityView, DeleteActivityView, EditDayView, \
-    DeleteDayView, CreatePlanView, EditPlanView, DeletePlanView, ShowAllPlans
+    DeleteDayView, CreatePlanView, EditPlanView, DeletePlanView, ShowAllPlans, DayInfoView, ActivityTimeView, \
+    EditActivityTime
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,6 +40,8 @@ urlpatterns = [
     path('activities/',ActivityListView.as_view(), name="activities"),
     path('activity_edit/<int:pk>/', EditActivityView.as_view(), name="edit-activity"),
     path('activity_delete/<int:pk>/', DeleteActivityView.as_view(), name="delete-activity"),
+    path('activity_time/<int:id>/<int:pk>/', ActivityTimeView.as_view(), name="activity-time"),
+    path('edit_activity_time/<int:pk>/', EditActivityTime.as_view(), name="edit-time"),
     path('add_day/', AddDayView.as_view(), name="add-day"),
     path('edit_day/<int:pk>/', EditDayView.as_view(), name="edit-day"),
     path('delete_day/<int:pk>/', DeleteDayView.as_view(), name='delete-day'),
@@ -48,5 +51,6 @@ urlpatterns = [
     path('add_plan/', CreatePlanView.as_view(), name="create-plan"),
     path('edit_plan/<int:pk>/', EditPlanView.as_view(), name="edit-plan"),
     path('delete_plan/<int:pk>/', DeletePlanView.as_view(), name="delete-plan"),
-    path('show_plans/', ShowAllPlans.as_view(), name="plan-list")
+    path('show_plans/', ShowAllPlans.as_view(), name="plan-list"),
+    path('date/<int:pk>/', DayInfoView.as_view(), name="day-info")
 ]

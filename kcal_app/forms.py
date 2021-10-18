@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.contrib.auth.models import User
 
-from kcal_app.models import Day, Ingredient, Meal, MealIngredientWeight
+from kcal_app.models import Day, Ingredient, Meal, MealIngredientWeight, ActivityDayTime
 
 
 class LoginForm(forms.Form):
@@ -31,6 +31,11 @@ class AddIngredientToMealForm(forms.ModelForm):
     class Meta:
         model = MealIngredientWeight
         exclude = ['meal']
+
+class ActivityTimeForm(forms.ModelForm):
+    class Meta:
+        model = ActivityDayTime
+        fields = "__all__"
 
 class EditDayForm(forms.ModelForm):
 

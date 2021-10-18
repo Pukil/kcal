@@ -20,43 +20,6 @@
         <li class="nav-item"><a href="{% url 'plan-list' %}">Show plans</a></li>
     </ol>
 </div>
-    <p>
-    <ul>
-    {% for ingredient in ingredients %}
-    <li>{{ ingredient.name }}</li>
-    {% endfor %}
-    </ul>
-    </p>
-    <div class="d-flex flex-column flex-shrink-0">
-     Meal list:
-    <table class="table">
-    <th class="table-bordered">
-        <td>Meal name:</td>
-        <td>Meal ingredients:</td>
-        <td>Total kcal</td>
-        <td></td>
-    <td>   </td>
-    </th>
-        {% for meal in meals %}
-    <tr>
-    <td>{{ forloop.counter }}</td>
-        <td>{{ meal }} </td>
-    <td>
-        <ul>
-            {% for ingredient in meal.ingredients.all %}
-                <li>{{ ingredient }}</li>
-                {% endfor %}
-        </ul>
-    </td>
-    <td>{{ meal.total_kcal }}</td>
-    <td><a href="{% url 'add-to-meal' meal.id %}">Add ingredient</a></td>
-    <td><a href="{% url 'edit-meal' meal.pk %}">Edit</a></td>
-    <td><a href="{% url 'delete-meal' meal.pk %}">Delete</a></td>
-    </tr>
-        {% endfor %}
-    </table>
-    </div>
-
     <div>
     <p>History</p>
     <table class="table">
@@ -71,7 +34,7 @@
         {% for day in days %}
     <tr>
     <td>{{ forloop.counter }}</td>
-        <td>{{ day.date }}</td>
+        <td><a href="{% url 'day-info' day.pk %}">{{ day.date }}</a></td>
     <td>
         <ul>
             {% for meal in day.meals.all %}
@@ -81,7 +44,7 @@
     </td>
     <td><ul>
         {% for activity in day.activity.all %}
-            <li>{{ activity.name }}</li>
+            <li><a href="{% url 'activity-time' activity.id day.pk %}">{{ activity.name }}</a></li>
         {% endfor %}
         </ul>
             </td>

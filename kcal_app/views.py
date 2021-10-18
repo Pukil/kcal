@@ -10,8 +10,8 @@ from django.views import View
 # Create your views here.
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from kcal_app.forms import LoginForm, AddUserAndProfileForm, AddDayForm, AddIngredientToMealForm, \
-    EditDayForm, AddMealForm
-from kcal_app.models import Ingredient, Meal, Profile, Activity, Day, Plan
+    EditDayForm, AddMealForm, ActivityTimeForm
+from kcal_app.models import Ingredient, Meal, Profile, Activity, Day, Plan, ActivityDayTime
 
 
 class LandingPageView(View):
@@ -48,8 +48,14 @@ class AddDayView(LoginRequiredMixin, View):
 
 class DayInfoView(LoginRequiredMixin, View):
 
-    def get(self, request, date):
-        return render(request, 'day_info.html', {'day': Day.objects.get(profile=request.user, date=date)})
+    def get(self, request, pk):
+        day = Day.objects.get(profile=Profile.objects.get(user=request.user), pk=pk)
+        return render(request, 'day_info.html', {
+            'day': day,
+            'meals': day.meals.all(),
+            'activities': day.activitydaytime_set.all()
+
+        })
 
 
 
@@ -110,19 +116,12 @@ class AddMealView(LoginRequiredMixin, CreateView):
     form_class = AddMealForm
     success_url = "/dashboard/"
 
-
-
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
-    # def form_invalid(self, form):
-    #     errors = []
-    #     for error in form.errors:
-    #         errors.append(error)
-    #     return HttpResponse(errors)
 
 
 class AddIngredientToMealView(LoginRequiredMixin, View):
@@ -217,6 +216,37 @@ class DeleteActivityView(LoginRequiredMixin, DeleteView):
     model = Activity
     success_url = reverse_lazy("activities")
 
+
+class ActivityTimeView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = 'next'
+
+    def get(self, request, id, pk):
+        activity = Activity.objects.get(pk=id)
+        day = Day.objects.get(pk=pk)
+        form = ActivityTimeForm(initial={'activity': activity, 'day': day})
+        return render(request, "add_to_meal.html", {'form': form})
+
+    def post(self, request, id, pk):
+        form = ActivityTimeForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.activity_id = id
+            item.day_id = pk
+            item.save()
+            return redirect('/dashboard/')
+        else:
+            return HttpResponse("błąd")
+
+
+
+class EditActivityTime(LoginRequiredMixin, UpdateView):
+    login_url = '/login/'
+    redirect_field_name = 'next'
+    model = ActivityDayTime
+    fields = "__all__"
+    success_url = reverse_lazy("profile-page")
+    template_name = "kcal_app/activity_form.html"
 
 class IngredientsListView(ListView):
     model = Ingredient
