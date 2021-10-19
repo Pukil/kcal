@@ -47,6 +47,7 @@ class EditDayForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         meals = Meal.objects.filter(user=user)
         self.fields['meals'].queryset = meals
+        self.fields['day_weight'].initial = Day.day_weight
 
     class Meta:
         model = Day

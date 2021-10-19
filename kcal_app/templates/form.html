@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="post" action="?next={{ request.path }}">
+    <form method="post">
     {% csrf_token %}
     {% block form %}
         {{ form.as_p }}
     {% endblock %}
-    <input type="hidden" name="next" value="{{ request.path }}">
+
     <input type="submit">
     </form>
     {{ error_message }}
-
-
 {% endblock %}

@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http import HttpResponse, request, HttpResponseRedirect
+from django.http import HttpResponse, request, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -28,7 +28,7 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
     login_url = '/login/'
     redirect_field_name = 'next'
     model = Profile
-    fields = ["age", "weight", "plan"]
+    fields = ["age", "weight", "height", "plan"]
     template_name = "kcal_app/activity_form.html"
     success_url = reverse_lazy("profile-page")
 
@@ -65,9 +65,7 @@ class DayInfoView(LoginRequiredMixin, View):
 
     def get(self, request, pk):
         day = Day.objects.get(profile=Profile.objects.get(user=request.user), pk=pk)
-        kcal_remaining = day.base_kcal + day.profile.plan.kcal_diff
-        # object = MealIngredientWeight.objects.get(id=self.kwargs['pk'])
-        # ing_id = MealIngredientWeight.objects.filter(meal_id=object.meal.pk, ingredient=object.ingredient.pk)
+        kcal_remaining = day.calculate_base() + day.profile.plan.kcal_diff
         for meal in day.meals.all():
             kcal_remaining -= meal.total_kcal()
         for activity in day.activitydaytime_set.all():
@@ -77,7 +75,6 @@ class DayInfoView(LoginRequiredMixin, View):
             'meals': day.meals.all(),
             'activities': day.activitydaytime_set.all(),
             'kcal_remaining': round(kcal_remaining),
-            # 'ing_id': ing_id,
         })
 
 
@@ -188,7 +185,6 @@ class EditMealView(LoginRequiredMixin, UpdateView):
     redirect_field_name = 'next'
     model = Meal
     form_class = EditMealForm
-    # fields = ["ingredients", 'name']
     template_name_suffix = '_update_form'
     success_url = "/dashboard/"
 
@@ -328,7 +324,7 @@ class LoginView(View):
                 login(request, user)
                 return redirect(next_url)
             else:
-                return HttpResponse("Błędne dane logowania")
+                return render(request, 'form.html',{'form': form, 'error_message': "Błędne dane logowania"})
         return render(request, 'form.html', {'form': form})
 
 

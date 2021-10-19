@@ -26,6 +26,7 @@
     <table class="table">
     <th class="table-bordered">
         <td>Date</td>
+        <td>Your weight:</td>
         <td>Meals:</td>
         <td>Activity:</td>
         <td>Total kcal:</td>
@@ -36,6 +37,7 @@
     <tr>
     <td>{{ forloop.counter }}</td>
         <td><a href="{% url 'day-info' day.pk %}">{{ day.date }}</a></td>
+    <td>{{ day.day_weight }}</td>
     <td>
         <ul>
             {% for meal in day.meals.all %}
