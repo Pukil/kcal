@@ -1,53 +1,24 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="{% static 'bootstrap5.1.1/bootstrap-5.1.1-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <script src="{% static 'bootstrap5.1.1/bootstrap-5.1.1-dist/js/bootstrap.bundle.min.js' %}"></script>
-    <title>Kcal tracker</title>
-</head>
-<body>
-<div class="container">
-    <div class="row">
-        <div class="col text-center">
-            <h2>Welcome to Kcal tracker!</h2>
-        </div>
-        <div class="col text-end">
-            {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}" class="btn btn-outline-dark">Logout</a>
-            {% else %}
-                <a href="{% url 'signup' %}" class="btn btn-success">Sign up</a><a href="{% url 'login' %}" class="btn btn-primary">Log in</a>
-            {% endif %}
-        </div>
-    </div>
-</div>
-<div >
-    <div>
-        <p>-----------------------------------------------</p>
-    </div>
-    <div>
-        <a href="{% url 'ingredients' %}">Ingredient list</a>
-    </div>
-    <div>
-        <a href="{% url 'activities' %}">Activity list</a>
-    </div>
-    <div>
-        Your dashboard = <a href="{% url 'profile-page'  %}">Dashboard</a>
-    </div>
-</div>
-<div>
-<br>
-<div>
-        <p>-----------------------------------------------</p>
-    </div>
-    {%  block content %}
-
+{% extends 'mainpage.html' %}
+{% block content %}
 {% endblock %}
-</div>
+{% if user.is_authenticated %}
+{% block sidebar %}
 
-</body>
-</html>
+<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
+<p class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white">
+    Here you can:
+</p>
+    <ol class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item"><a href="{% url 'add-ingredient' %}">Add ingredient</a></li>
+        <li class="nav-item"><a href="{% url 'add-meal' %}">Add meal</a></li>
+        <li class="nav-item"><a href="{% url 'add-activity' %}">Add activity</a></li>
+        <li class="nav-item"><a href="{% url 'add-day' %}">Add day</a></li>
+        <li class="nav-item"><a href="{% url 'create-plan' %}">Add plan</a></li>
+        <li class="nav-item"><a href="{% url 'plan-list' %}">Show plans</a></li>
+
+        <li class="nav-item"><a href="{% url 'ingredients'  %}">See all ingredients</a></li>
+        <li class="nav-item"><a href="{% url 'activities'  %}">See all activities</a></li>
+    </ol>
+</div>
+{% endblock %}
+{% endif %}
