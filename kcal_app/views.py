@@ -78,8 +78,6 @@ class DayInfoView(LoginRequiredMixin, View):
         })
 
 
-
-
 class EditDayView(LoginRequiredMixin, UpdateView):
     login_url = '/login/'
     redirect_field_name = 'next'
@@ -136,8 +134,6 @@ class EditIngredientWeight(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("profile-page")
 
 
-
-
 class DeleteIngredientWeight(LoginRequiredMixin, DeleteView):
     login_url = '/login/'
     redirect_field_name = 'next'
@@ -165,7 +161,7 @@ class AddIngredientToMealView(LoginRequiredMixin, View):
     redirect_field_name = 'next'
 
     def get(self, request, id):
-        form = AddIngredientToMealForm(initial={"meal": Meal.objects.get(pk=id) })
+        form = AddIngredientToMealForm(initial={"meal": Meal.objects.get(pk=id)})
         return render(request, 'add_to_meal.html', {'form': form})
 
     def post(self, request, id):
@@ -177,7 +173,6 @@ class AddIngredientToMealView(LoginRequiredMixin, View):
             return redirect('/dashboard/')
         else:
             return HttpResponse("błąd")
-
 
 
 class EditMealView(LoginRequiredMixin, UpdateView):
@@ -324,7 +319,7 @@ class LoginView(View):
                 login(request, user)
                 return redirect(next_url)
             else:
-                return render(request, 'form.html',{'form': form, 'error_message': "Błędne dane logowania"})
+                return render(request, 'form.html', {'form': form, 'error_message': "Błędne dane logowania"})
         return render(request, 'form.html', {'form': form})
 
 

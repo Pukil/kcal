@@ -44,7 +44,6 @@ class MealIngredientWeight(models.Model):
         return self.weight * self.ingredient.calculate_calories_per_1_gram()
 
 
-
 class Day(models.Model):
     date = models.DateField()
     meals = models.ManyToManyField(Meal)
@@ -72,7 +71,6 @@ class Day(models.Model):
         else:
             self.base_kcal = 2000
             return self.base_kcal
-
 
 
 class Activity(models.Model):
@@ -113,11 +111,6 @@ class Profile(models.Model):
             day.date = datetime.datetime.now().date()
             day.profile = self
             day.save()
-
-
-class Recipe(models.Model):
-    meal = models.OneToOneField(Meal, on_delete=models.CASCADE)
-    details = models.TextField()
 
 
 class Plan(models.Model):
