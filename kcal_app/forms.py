@@ -15,10 +15,10 @@ class AddUserAndProfileForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
-    name = forms.CharField(max_length=64)
-    age = forms.IntegerField(min_value=1)
-    weight = forms.IntegerField(min_value=1)
-    height = forms.IntegerField(min_value=1)
+    name = forms.CharField(max_length=64, required=False)
+    age = forms.IntegerField(min_value=1, required=False)
+    weight = forms.IntegerField(min_value=1, required=False)
+    height = forms.IntegerField(min_value=1, required=False)
 
 
 class AddDayForm(forms.ModelForm):
