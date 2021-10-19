@@ -1,2 +1,5 @@
-{% include 'form.html' %}
+{% extends 'form.html' %}
 <a href="/add_ingredient/">Add Ingredient</a>
+{% block form %}
+{{ form.as_p }}
+{% endblock %}

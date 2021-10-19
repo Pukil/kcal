@@ -18,6 +18,7 @@ class AddUserAndProfileForm(forms.Form):
     name = forms.CharField(max_length=64)
     age = forms.IntegerField(min_value=1)
     weight = forms.IntegerField(min_value=1)
+    height = forms.IntegerField(min_value=1)
 
 
 class AddDayForm(forms.ModelForm):
@@ -38,7 +39,8 @@ class AddIngredientToMealForm(forms.ModelForm):
 class ActivityTimeForm(forms.ModelForm):
     class Meta:
         model = ActivityDayTime
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ['day']
 
 
 class EditDayForm(forms.ModelForm):
