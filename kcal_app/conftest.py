@@ -10,11 +10,11 @@ def user():
     user = User.objects.create_user(username='bartek1', password='bartek1')
     return user
 
+
 @pytest.fixture
 def client():
     client = Client()
     return client
-
 
 
 @pytest.fixture

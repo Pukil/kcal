@@ -50,7 +50,7 @@ def test_signup_get(client):
 @pytest.mark.django_db
 def test_signup_post(client, profile):
     data = {
-        'username': 'bartek1',
+        'username': 'bartek1231',
         'password': 'bartek1',
         'confirm_password': 'bartek1'
     }
@@ -71,6 +71,7 @@ def test_edit_profile_get_no_login(client, profile):
     response = client.get(reverse("edit-profile", kwargs={'pk': profile.pk}))
     assert response.status_code == 302
 
+
 @pytest.mark.django_db
 def test_edit_profile_post(client, profile):
     data = {
@@ -82,6 +83,7 @@ def test_edit_profile_post(client, profile):
     assert response.status_code == 302
 
 
+########## INGREDIENT ##########
 def test_add_ingredient_no_login(client):
     response = client.get(reverse("add-ingredient"))
     assert response.status_code == 302
