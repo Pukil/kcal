@@ -7,7 +7,7 @@ from kcal_app.models import Profile
 
 @pytest.fixture
 def user():
-    user = User.objects.create_user(username='bartek11', password='bartek1')
+    user = User.objects.create_user(username='bartek1', password='bartek1')
     return user
 
 @pytest.fixture

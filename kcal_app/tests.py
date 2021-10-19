@@ -57,6 +57,17 @@ def test_signup_post(client, profile):
     response = client.post(reverse('signup'), data=a)
     assert response.status_code == 302
 
+########## EDIT PROFILE ##########
+@pytest.mark.django_db
+def test_edit_profile_get_login(client, user, profile):
+    client.force_login(user)
+    response = client.get(reverse("edit-profile", kwargs={'pk': profile.pk}))
+    assert response.status_code == 200
+
+
+
+
+
 
 def test_add_ingredient_no_login(client):
     response = client.get(reverse("add-ingredient"))
