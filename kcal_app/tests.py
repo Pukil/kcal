@@ -1,4 +1,5 @@
 import pytest
+from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
 from django.urls import reverse
 
@@ -124,6 +125,7 @@ def test_add_ingredient_login_post(client, user):
     response = client.post(reverse("add-ingredient"), data=data)
     assert response.status_code == 200
 
+
 ########## EDIT INGREDIENT ##########
 @pytest.mark.django_db
 def test_edit_ingredient_no_login(client, ingredient):
@@ -164,5 +166,36 @@ def test_edit_ingredient_login_post_changes(client, ingredient, user):
     assert response.status_code == 302
     Ingredient.objects.get(**data)
 
+
 ########## DELETE INGREDIENT #########
+@pytest.mark.django_db
+def test_delete_ingredient_login(client, ingredient, user):
+    client.force_login(user)
+    response = client.get(reverse("delete-ingredient", kwargs={'pk': ingredient.pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_delete_ingredient_no_login(client, ingredient):
+    response = client.get(reverse("delete-ingredient", kwargs={'pk': ingredient.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_ingredient_login_post(client, ingredient, user):
+    client.force_login(user)
+    response = client.post(reverse("delete-ingredient", kwargs={'pk': ingredient.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_ingredient_login_post_deleted(client, ingredient, user):
+    client.force_login(user)
+    response = client.post(reverse("delete-ingredient", kwargs={'pk': ingredient.pk}))
+    assert response.status_code == 302
+    with pytest.raises(ObjectDoesNotExist):
+        Ingredient.objects.get(pk=ingredient.pk)
+
+
+########## ADD MEAL ##########
 
