@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 
-from kcal_app.models import Profile, Ingredient, Meal
+from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight
 
 
 @pytest.fixture
@@ -39,3 +39,8 @@ def ingredients():
 def meal(user):
     meal = Meal.objects.create(name="random posilek do testow", user=user)
     return meal
+
+@pytest.fixture
+def weight(meal, ingredient):
+    weight = MealIngredientWeight.objects.create(meal=meal, ingredient=ingredient, weight=123)
+    return weight

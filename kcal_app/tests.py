@@ -381,3 +381,44 @@ def test_delete_meal_login_post_deleted(client, meal, user):
     assert response.status_code == 302
     with pytest.raises(ObjectDoesNotExist):
         Meal.objects.get(pk=meal.pk)
+
+
+########## EDIT WEIGHT ##########
+@pytest.mark.django_db
+def test_edit_weight_get_no_login(client, weight):
+    response = client.get(reverse('edit-weight', kwargs={'pk': weight.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_edit_weight_get_login(client, weight):
+    client.force_login(weight.meal.user)
+    response = client.get(reverse('edit-weight', kwargs={'pk': weight.pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_edit_weight_post_login(client, weight):
+    client.force_login(weight.meal.user)
+    data = {
+        'meal': weight.meal.id,
+        'ingredient': weight.ingredient.id,
+        'weight': 999
+    }
+    response = client.post(reverse('edit-weight', kwargs={'pk': weight.pk}), data=data)
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_edit_weight_post_login_change(client, weight):
+    client.force_login(weight.meal.user)
+    data = {
+        'meal': weight.meal.id,
+        'ingredient': weight.ingredient.id,
+        'weight': 999
+    }
+    response = client.post(reverse('edit-weight', kwargs={'pk': weight.pk}), data=data)
+    assert response.status_code == 302
+    MealIngredientWeight.objects.get(**data)
+
+
