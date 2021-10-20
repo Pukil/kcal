@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 
-from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight
+from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity
 
 
 @pytest.fixture
@@ -44,3 +44,10 @@ def meal(user):
 def weight(meal, ingredient):
     weight = MealIngredientWeight.objects.create(meal=meal, ingredient=ingredient, weight=123)
     return weight
+
+@pytest.fixture
+def activities():
+    activities = []
+    for x in range(10):
+        activities.append(Activity.objects.create(name=f"activity_number_{x+1}", burned_kcal=x*20))
+    return activities

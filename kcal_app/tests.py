@@ -450,3 +450,38 @@ def test_delete_weight_post_login_deleted(client, weight):
     assert response.status_code == 302
     with pytest.raises(ObjectDoesNotExist):
         MealIngredientWeight.objects.get(pk=weight.pk)
+
+
+########## ACTIVITIES ##########
+def test_get_activities_list_no_login(client):
+    response = client.get(reverse('activities'))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_get_activities_list_login(client, user):
+    client.force_login(user)
+    response = client.get(reverse('activities'))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_get_activities_list_login_not_empty(client, user, activities):
+    client.force_login(user)
+    response = client.get(reverse('activities'))
+    assert response.status_code == 200
+    activity_list = response.context['object_list']
+    assert activity_list.count() == len(activities)
+
+
+@pytest.mark.django_db
+def test_get_activities_list_login_not_empty_all_activities_in_list(client, user, activities):
+    client.force_login(user)
+    response = client.get(reverse('activities'))
+    assert response.status_code == 200
+    activities_list = response.context['object_list']
+    assert activities_list.count() == len(activities)
+    for activity in activities:
+        assert activity in activities_list
+
+
