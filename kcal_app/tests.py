@@ -366,3 +366,18 @@ def test_delete_meal_get_no_login(client, meal, user):
     response = client.get(reverse("delete-meal", kwargs={'pk': meal.pk}))
     assert response.status_code == 302
 
+
+@pytest.mark.django_db
+def test_delete_meal_login_post(client, meal, user):
+    client.force_login(user)
+    response = client.post(reverse("delete-meal", kwargs={'pk': meal.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_meal_login_post_deleted(client, meal, user):
+    client.force_login(user)
+    response = client.post(reverse("delete-meal", kwargs={'pk': meal.pk}))
+    assert response.status_code == 302
+    with pytest.raises(ObjectDoesNotExist):
+        Meal.objects.get(pk=meal.pk)
