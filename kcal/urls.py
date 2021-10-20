@@ -51,13 +51,15 @@ urlpatterns = [
     path('activity_time/<int:id>/<int:pk>/', ActivityTimeView.as_view(), name="activity-time"),
     path('edit_activity_time/<int:pk>/', EditActivityTime.as_view(), name="edit-time"),
     path('delete_activity_time/<int:pk>/', DeleteActivityTime.as_view(), name="delete-time"),
+    ### day urls
     path('add_day/', AddDayView.as_view(), name="add-day"),
     path('edit_day/<int:pk>/', EditDayView.as_view(), name="edit-day"),
     path('delete_day/<int:pk>/', DeleteDayView.as_view(), name='delete-day'),
-
+    path('date/<int:pk>/', DayInfoView.as_view(), name="day-info"),
+    ### plan urls
     path('add_plan/', CreatePlanView.as_view(), name="create-plan"),
     path('edit_plan/<int:pk>/', EditPlanView.as_view(), name="edit-plan"),
     path('delete_plan/<int:pk>/', DeletePlanView.as_view(), name="delete-plan"),
     path('show_plans/', ShowAllPlans.as_view(), name="plan-list"),
-    path('date/<int:pk>/', DayInfoView.as_view(), name="day-info")
+
 ]
