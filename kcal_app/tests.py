@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 # Create your tests here.
-from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight
+from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity
 
 
 ########## LOGIN ##########
@@ -174,13 +174,27 @@ def test_add_ingredient_login(client, user):
 def test_add_ingredient_login_post(client, user):
     client.force_login(user)
     data = {
-        'name': "abcd",
-        'fat': 60,
-        'carbs': 160,
-        'protein': 25
+        'name': 'jajko',
+        'fat': 60.2,
+        'carbs': 160.3,
+        'proteins': 25.3,
     }
     response = client.post(reverse("add-ingredient"), data=data)
-    assert response.status_code == 200
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_add_ingredient_post_login_check_existing(client, user):
+    client.force_login(user)
+    data = {
+        'name': "abcdefghjkl",
+        'fat': 60,
+        'carbs': 160,
+        'proteins': 25
+    }
+    response = client.post(reverse("add-ingredient"), data=data)
+    assert response.status_code == 302
+    Ingredient.objects.get(**data)
 
 
 ########## EDIT INGREDIENT ##########
@@ -485,3 +499,67 @@ def test_get_activities_list_login_not_empty_all_activities_in_list(client, user
         assert activity in activities_list
 
 
+########## ADD ACTIVITY ##########
+def test_add_activity_get_no_login(client):
+    response = client.get(reverse("add-activity"))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_add_activity_get_login(client, user):
+    client.force_login(user)
+    response = client.get(reverse("add-activity"))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_add_activity_post_login(client, user):
+    client.force_login(user)
+    data = {
+        'name': "abcd",
+        'burned_kcal': 997
+    }
+    response = client.post(reverse("add-activity"), data=data)
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_add_activity_post_login_check_existing(client, user):
+    client.force_login(user)
+    data = {
+        'name': "abcd",
+        'burned_kcal': 997
+    }
+    response = client.post(reverse("add-activity"), data=data)
+    assert response.status_code == 302
+    Activity.objects.get(**data)
+
+
+########## ACTIVITY DELETE ##########
+@pytest.mark.django_db
+def test_delete_activity_login(client, activities, user):
+    client.force_login(user)
+    response = client.get(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_delete_activity_no_login(client, activities):
+    response = client.get(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_activity_login_post(client, activities, user):
+    client.force_login(user)
+    response = client.post(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_ingredient_login_post_deleted(client, activities, user):
+    client.force_login(user)
+    response = client.post(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
+    assert response.status_code == 302
+    with pytest.raises(ObjectDoesNotExist):
+        Activity.objects.get(pk=activities[0].pk)
