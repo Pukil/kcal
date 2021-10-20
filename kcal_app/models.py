@@ -96,7 +96,7 @@ class Profile(models.Model):
     age = models.IntegerField(null=True)
     weight = models.IntegerField(null=True)
     height = models.IntegerField(default=0, null=True)
-    plan = models.ForeignKey('Plan', on_delete=models.CASCADE, default=None, null=True)
+    plan = models.ForeignKey('Plan', on_delete=models.CASCADE, default=None, null=True, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
