@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 
-from kcal_app.models import Profile, Ingredient
+from kcal_app.models import Profile, Ingredient, Meal
 
 
 @pytest.fixture
@@ -26,3 +26,16 @@ def profile(user):
 def ingredient():
     ingredient = Ingredient.objects.create(name="jablko", fat=12, carbs=13, proteins=14)
     return ingredient
+
+
+@pytest.fixture
+def ingredients():
+    ingredients = []
+    for x in range(10):
+        ingredients.append(Ingredient.objects.create(name=f"jablko {x}", fat=x, carbs=x, proteins=x))
+    return ingredients
+
+@pytest.fixture
+def meal(user):
+    meal = Meal.objects.create(name="random posilek do testow", user=user)
+    return meal
