@@ -18,7 +18,6 @@ from kcal_app.models import Ingredient, Meal, Profile, Activity, Day, Plan, Acti
 # 1 Zrobic bardziej user friendly
 
 
-
 class LandingPageView(View):
     def get(self, request):
         return render(request, 'mainpage.html')
@@ -137,6 +136,7 @@ class IngredientsListView(LoginRequiredMixin, ListView):
     login_url = '/login/'
     redirect_field_name = 'next'
 
+
 ########### MEAL #############
 class AddMealView(LoginRequiredMixin, CreateView):
     login_url = '/login/'
@@ -217,6 +217,7 @@ class DeletePlanView(LoginRequiredMixin, DeleteView):
     redirect_field_name = 'next'
     model = Plan
     success_url = reverse_lazy('plan-list')
+
 
 ########### Activity #############
 class AddActivity(LoginRequiredMixin, CreateView):
@@ -309,7 +310,6 @@ class LoginView(View):
         form = LoginForm()
         return render(request, 'form.html', {'form': form})
 
-
     def post(self, request):
         form = LoginForm(request.POST)
         next_url = request.GET.get('next', '/dashboard/')
@@ -345,7 +345,8 @@ class SignUp(View):
                     new_user = User.objects.create_user(username=form.cleaned_data['username'],
                                                         password=form.cleaned_data['password'])
                     profile = Profile.objects.create(user=new_user, name=form.cleaned_data['name'],
-                                                     age=form.cleaned_data['age'], weight=form.cleaned_data['weight'], height=form.cleaned_data['height'])
+                                                     age=form.cleaned_data['age'], weight=form.cleaned_data['weight'],
+                                                     height=form.cleaned_data['height'])
                     return redirect('/login')
                 else:
                     return render(request, 'form.html', {'form': form})

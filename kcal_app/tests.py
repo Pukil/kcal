@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -16,7 +17,7 @@ def test_login(client):
 
 
 @pytest.mark.django_db
-def test_login_with_login(client, user):
+def test_login_with_logged_in(client, user):
     client.force_login(user)
     response = client.get(reverse('login'))
     assert response.status_code == 302
@@ -41,7 +42,7 @@ def test_login_post(client):
 
 ########## LOGOUT ##########
 @pytest.mark.django_db
-def test_logout_get(client, user):
+def test_logout_get_logged_in(client, user):
     client.force_login(user)
     response = client.get(reverse('logout'))
     assert response.status_code == 302
@@ -74,6 +75,18 @@ def test_signup_post(client, profile):
     }
     response = client.post(reverse('signup'), data=data)
     assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_signup_post_created(client, profile):
+    data = {
+        'username': 'bartek1231',
+        'password': 'bartek1',
+        'confirm_password': 'bartek1'
+    }
+    response = client.post(reverse('signup'), data=data)
+    assert response.status_code == 302
+    Profile.objects.get(user=User.objects.get(username=data['username']))
 
 
 ########## LANDING PAGE ##########
@@ -118,13 +131,13 @@ def test_edit_profile_post(client, profile):
 def test_edit_profile_post_changes(client, profile):
     client.force_login(profile.user)
     data = {
-        'age': 12,
+        'age': 32,
         'weight': 60,
         'height': 160
     }
     response = client.post(reverse('edit-profile', kwargs={'pk': profile.pk}), data=data)
     assert response.status_code == 302
-    Profile.objects.get(age=12)
+    Profile.objects.get(age=data['age'])
 
 
 ########## DASHBOARD ##########
@@ -141,20 +154,20 @@ def test_dashboard_get_login(client, user, profile):
 
 
 ########## INGREDIENTS ##########
-def test_get_ingredients_list_no_login(client):
+def test_ingredients_list_get_no_login(client):
     response = client.get(reverse('ingredients'))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_get_ingredients_list_login(client, user):
+def test_ingredients_list_get_login(client, user):
     client.force_login(user)
     response = client.get(reverse('ingredients'))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_get_ingredients_list_login_not_empty(client, user, ingredients):
+def test_ingredients_list_get_login_not_empty(client, user, ingredients):
     client.force_login(user)
     response = client.get(reverse('ingredients'))
     assert response.status_code == 200
@@ -163,7 +176,7 @@ def test_get_ingredients_list_login_not_empty(client, user, ingredients):
 
 
 @pytest.mark.django_db
-def test_get_ingredients_list_login_not_empty_all_ingredients_in_list(client, user, ingredients):
+def test_ingredients_list_get_login_not_empty_all_ingredients_in_list(client, user, ingredients):
     client.force_login(user)
     response = client.get(reverse('ingredients'))
     assert response.status_code == 200
@@ -174,20 +187,20 @@ def test_get_ingredients_list_login_not_empty_all_ingredients_in_list(client, us
 
 
 ########## ADD INGREDIENT ##########
-def test_add_ingredient_no_login(client):
+def test_add_ingredient_get_no_login(client):
     response = client.get(reverse("add-ingredient"))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_add_ingredient_login(client, user):
+def test_add_ingredient_get_login(client, user):
     client.force_login(user)
     response = client.get(reverse("add-ingredient"))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_add_ingredient_login_post(client, user):
+def test_add_ingredient_post_login(client, user):
     client.force_login(user)
     data = {
         'name': 'jajko',
@@ -215,23 +228,23 @@ def test_add_ingredient_post_login_check_existing(client, user):
 
 ########## EDIT INGREDIENT ##########
 @pytest.mark.django_db
-def test_edit_ingredient_no_login(client, ingredient):
+def test_edit_ingredient_get_no_login(client, ingredient):
     response = client.get(reverse("edit-ingredient", kwargs={'pk': ingredient.pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_edit_ingredient_login(client, ingredient, user):
+def test_edit_ingredient_get_login(client, ingredient, user):
     client.force_login(user)
     response = client.get(reverse("edit-ingredient", kwargs={'pk': ingredient.pk}))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_edit_ingredient_login_post(client, ingredient, user):
+def test_edit_ingredient_post_login(client, ingredient, user):
     client.force_login(user)
     data = {
-        "name": "jablko1",
+        "name": "asdasafasfadasdasd",
         "fat": 1,
         "carbs": 2,
         "proteins": 12
@@ -241,10 +254,10 @@ def test_edit_ingredient_login_post(client, ingredient, user):
 
 
 @pytest.mark.django_db
-def test_edit_ingredient_login_post_changes(client, ingredient, user):
+def test_edit_ingredient_post_login_changes(client, ingredient, user):
     client.force_login(user)
     data = {
-        "name": "jablko1",
+        "name": "qweqweqweqweqweqwe",
         "fat": 1,
         "carbs": 2,
         "proteins": 12
@@ -256,27 +269,27 @@ def test_edit_ingredient_login_post_changes(client, ingredient, user):
 
 ########## DELETE INGREDIENT #########
 @pytest.mark.django_db
-def test_delete_ingredient_login(client, ingredient, user):
+def test_delete_ingredient_get_login(client, ingredient, user):
     client.force_login(user)
     response = client.get(reverse("delete-ingredient", kwargs={'pk': ingredient.pk}))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_delete_ingredient_no_login(client, ingredient):
+def test_delete_ingredient_get_no_login(client, ingredient):
     response = client.get(reverse("delete-ingredient", kwargs={'pk': ingredient.pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_delete_ingredient_login_post(client, ingredient, user):
+def test_delete_ingredient_post_login(client, ingredient, user):
     client.force_login(user)
     response = client.post(reverse("delete-ingredient", kwargs={'pk': ingredient.pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_delete_ingredient_login_post_deleted(client, ingredient, user):
+def test_delete_ingredient_post_login_deleted(client, ingredient, user):
     client.force_login(user)
     response = client.post(reverse("delete-ingredient", kwargs={'pk': ingredient.pk}))
     assert response.status_code == 302
@@ -305,6 +318,17 @@ def test_add_meal_post_login(client, user):
     }
     response = client.post(reverse("add-meal"), data=data)
     assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_add_meal_post_login_exists(client, user):
+    client.force_login(user)
+    data = {
+        'name': "random_posilek"
+    }
+    response = client.post(reverse("add-meal"), data=data)
+    assert response.status_code == 302
+    Meal.objects.get(name=data['name'])
 
 
 ########## ADD TO MEAL ##########
@@ -398,14 +422,14 @@ def test_delete_meal_get_no_login(client, meal, user):
 
 
 @pytest.mark.django_db
-def test_delete_meal_login_post(client, meal, user):
+def test_delete_meal_post_login(client, meal, user):
     client.force_login(user)
     response = client.post(reverse("delete-meal", kwargs={'pk': meal.pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_delete_meal_login_post_deleted(client, meal, user):
+def test_delete_meal_post_login_deleted(client, meal, user):
     client.force_login(user)
     response = client.post(reverse("delete-meal", kwargs={'pk': meal.pk}))
     assert response.status_code == 302
@@ -445,7 +469,7 @@ def test_edit_weight_post_login_change(client, weight):
     data = {
         'meal': weight.meal.id,
         'ingredient': weight.ingredient.id,
-        'weight': 999
+        'weight': 900
     }
     response = client.post(reverse('edit-weight', kwargs={'pk': weight.pk}), data=data)
     assert response.status_code == 302
@@ -483,20 +507,20 @@ def test_delete_weight_post_login_deleted(client, weight):
 
 
 ########## ACTIVITIES ##########
-def test_get_activities_list_no_login(client):
+def test_get_activities_list_get_no_login(client):
     response = client.get(reverse('activities'))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_get_activities_list_login(client, user):
+def test_get_activities_list_get_login(client, user):
     client.force_login(user)
     response = client.get(reverse('activities'))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_get_activities_list_login_not_empty(client, user, activities):
+def test_get_activities_list_get_login_not_empty(client, user, activities):
     client.force_login(user)
     response = client.get(reverse('activities'))
     assert response.status_code == 200
@@ -505,7 +529,7 @@ def test_get_activities_list_login_not_empty(client, user, activities):
 
 
 @pytest.mark.django_db
-def test_get_activities_list_login_not_empty_all_activities_in_list(client, user, activities):
+def test_get_activities_list_get_login_not_empty_all_activities_in_list(client, user, activities):
     client.force_login(user)
     response = client.get(reverse('activities'))
     assert response.status_code == 200
@@ -544,7 +568,7 @@ def test_add_activity_post_login_check_existing(client, user):
     client.force_login(user)
     data = {
         'name': "abcd",
-        'burned_kcal': 997
+        'burned_kcal': 998
     }
     response = client.post(reverse("add-activity"), data=data)
     assert response.status_code == 302
@@ -553,27 +577,27 @@ def test_add_activity_post_login_check_existing(client, user):
 
 ########## ACTIVITY DELETE ##########
 @pytest.mark.django_db
-def test_delete_activity_login(client, activities, user):
+def test_delete_activity_get_login(client, activities, user):
     client.force_login(user)
     response = client.get(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_delete_activity_no_login(client, activities):
+def test_delete_activity_get_no_login(client, activities):
     response = client.get(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_delete_activity_login_post(client, activities, user):
+def test_delete_activity_post_login(client, activities, user):
     client.force_login(user)
     response = client.post(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_delete_activity_login_post_deleted(client, activities, user):
+def test_delete_activity_post_login_deleted(client, activities, user):
     client.force_login(user)
     response = client.post(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
     assert response.status_code == 302
@@ -613,7 +637,7 @@ def test_activity_time_post_login_exists(client, activities, day):
     data = {
         'activity': activities[0].pk,
         'day': day.pk,
-        'time_in_minutes': 123
+        'time_in_minutes': 1232323
     }
     response = client.post(reverse("activity-time", kwargs={'id': activities[0].pk, 'pk': day.pk}), data=data)
     assert response.status_code == 302
@@ -652,7 +676,7 @@ def test_edit_activitY_time_post_login_changed(client, profile, time, activities
     data = {
         'activity': activities[1].pk,
         'day': day.pk,
-        'time_in_minutes': 321
+        'time_in_minutes': 3123123
     }
     response = client.post(reverse('edit-time', kwargs={'pk': time.pk}), data=data)
     assert response.status_code == 302
@@ -771,36 +795,36 @@ def test_edit_day_post_login_changes(client, profile, meal, activities, day):
         'activity': activities[0].pk,
         'profile': profile.pk,
         'base_kcal': 2000,
-        'day_weight': 75
+        'day_weight': 73
     }
     response = client.post(reverse('edit-day', kwargs={'pk': day.pk}), data=data)
     assert response.status_code == 302
-    assert Day.objects.get(date=data['date']).day_weight == 75
+    assert Day.objects.get(date=data['date']).day_weight == 73
 
 
 ########## DELETE DAY ##########
 @pytest.mark.django_db
-def test_delete_day_login(client, day, profile):
+def test_delete_day_get_login(client, day, profile):
     client.force_login(profile.user)
     response = client.get(reverse("delete-day", kwargs={'pk': day.pk}))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_delete_day_no_login(client, day):
+def test_delete_day_get_no_login(client, day):
     response = client.get(reverse("delete-day", kwargs={'pk': day.pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_delete_day_login_post(client, day, profile):
+def test_delete_day_post_login(client, day, profile):
     client.force_login(profile.user)
     response = client.post(reverse("delete-day", kwargs={'pk': day.pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_delete_day_login_post_deleted(client, day, profile):
+def test_delete_day_post_login_deleted(client, day, profile):
     client.force_login(profile.user)
     response = client.post(reverse("delete-day", kwargs={'pk': day.pk}))
     assert response.status_code == 302
@@ -836,7 +860,7 @@ def test_add_plan_get_login(client, user):
 
 
 @pytest.mark.django_db
-def test_add_plan_login_post(client, user):
+def test_add_plan_post_login(client, user):
     client.force_login(user)
     data = {
         'name': 'plantestowy',
@@ -892,7 +916,7 @@ def test_edit_plan_post_login_edited(client, plan, user):
     data = {
         'name': 'test edycji',
         'description': "opis planu testowego edytowanego",
-        'kcal_diff': 350
+        'kcal_diff': 3500
     }
     response = client.post(reverse("edit-plan", kwargs={'pk': plan.pk}), data=data)
     assert response.status_code == 302
@@ -914,14 +938,14 @@ def test_delete_plan_get_no_login(client, plan):
 
 
 @pytest.mark.django_db
-def test_delete_plan_login_post(client, plan, user):
+def test_delete_plan_post_login(client, plan, user):
     client.force_login(user)
     response = client.post(reverse("delete-plan", kwargs={'pk': plan.pk}))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_delete_plan_login_post_deleted(client, plan, user):
+def test_delete_plan_post_login_deleted(client, plan, user):
     client.force_login(user)
     response = client.post(reverse("delete-plan", kwargs={'pk': plan.pk}))
     assert response.status_code == 302
@@ -930,20 +954,20 @@ def test_delete_plan_login_post_deleted(client, plan, user):
 
 
 ########## SHOW PLANS ##########
-def test_get_plan_list_no_login(client):
+def test_plan_list_get_no_login(client):
     response = client.get(reverse('plan-list'))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_get_plan_list_login(client, user):
+def test_get_plan_list_get_login(client, user):
     client.force_login(user)
     response = client.get(reverse('plan-list'))
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
-def test_get_plan_list_login_not_empty(client, user, plans):
+def test_plan_list_get_login_not_empty(client, user, plans):
     client.force_login(user)
     response = client.get(reverse('plan-list'))
     assert response.status_code == 200
@@ -952,7 +976,7 @@ def test_get_plan_list_login_not_empty(client, user, plans):
 
 
 @pytest.mark.django_db
-def test_get_plan_list_login_not_empty_all_plans_in_list(client, user, plans):
+def test_plan_list_get_login_not_empty_all_plans_in_list(client, user, plans):
     client.force_login(user)
     response = client.get(reverse('plan-list'))
     assert response.status_code == 200
