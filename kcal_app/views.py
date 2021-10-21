@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http import HttpResponse, request, HttpResponseRedirect, HttpRequest
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -16,7 +16,7 @@ from kcal_app.models import Ingredient, Meal, Profile, Activity, Day, Plan, Acti
 
 # TODO
 # 1 Zrobic bardziej user friendly
-# 2 Szata graficzna
+
 
 
 class LandingPageView(View):
@@ -216,6 +216,7 @@ class DeletePlanView(LoginRequiredMixin, DeleteView):
     login_url = '/login/'
     redirect_field_name = 'next'
     model = Plan
+    success_url = reverse_lazy('plan-list')
 
 ########### Activity #############
 class AddActivity(LoginRequiredMixin, CreateView):
@@ -303,8 +304,11 @@ class DashboardView(LoginRequiredMixin, View):
 class LoginView(View):
 
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('/dashboard/')
         form = LoginForm()
         return render(request, 'form.html', {'form': form})
+
 
     def post(self, request):
         form = LoginForm(request.POST)
@@ -328,6 +332,8 @@ class LogoutView(View):
 
 class SignUp(View):
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('/dashboard/')
         form = AddUserAndProfileForm()
         return render(request, 'form.html', {'form': form})
 
