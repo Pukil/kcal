@@ -859,6 +859,7 @@ def test_add_plan_post_login_check_existing(client, user):
     assert response.status_code == 302
     Plan.objects.get(**data)
 
+
 ########## EDIT PLAN ##########
 @pytest.mark.django_db
 def test_edit_plan_get_no_login(client, plan):
@@ -872,6 +873,7 @@ def test_edit_plan_get_login(client, plan, user):
     response = client.get(reverse("edit-plan", kwargs={'pk': plan.pk}))
     assert response.status_code == 200
 
+
 @pytest.mark.django_db
 def test_edit_plan_post_login(client, plan, user):
     client.force_login(user)
@@ -882,6 +884,7 @@ def test_edit_plan_post_login(client, plan, user):
     }
     response = client.post(reverse("edit-plan", kwargs={'pk': plan.pk}), data=data)
     assert response.status_code == 302
+
 
 @pytest.mark.django_db
 def test_edit_plan_post_login_edited(client, plan, user):
@@ -895,4 +898,65 @@ def test_edit_plan_post_login_edited(client, plan, user):
     assert response.status_code == 302
     Plan.objects.get(**data)
 
+
 ########## DELETE PLAN ##########
+@pytest.mark.django_db
+def test_delete_plan_get_login(client, plan, user):
+    client.force_login(user)
+    response = client.get(reverse("delete-plan", kwargs={'pk': plan.pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_delete_plan_get_no_login(client, plan):
+    response = client.get(reverse("delete-plan", kwargs={'pk': plan.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_plan_login_post(client, plan, user):
+    client.force_login(user)
+    response = client.post(reverse("delete-plan", kwargs={'pk': plan.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_plan_login_post_deleted(client, plan, user):
+    client.force_login(user)
+    response = client.post(reverse("delete-plan", kwargs={'pk': plan.pk}))
+    assert response.status_code == 302
+    with pytest.raises(ObjectDoesNotExist):
+        Plan.objects.get(pk=plan.pk)
+
+
+########## SHOW PLANS ##########
+def test_get_plan_list_no_login(client):
+    response = client.get(reverse('plan-list'))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_get_plan_list_login(client, user):
+    client.force_login(user)
+    response = client.get(reverse('plan-list'))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_get_plan_list_login_not_empty(client, user, plans):
+    client.force_login(user)
+    response = client.get(reverse('plan-list'))
+    assert response.status_code == 200
+    plan_list = response.context['object_list']
+    assert plan_list.count() == len(plans)
+
+
+@pytest.mark.django_db
+def test_get_plan_list_login_not_empty_all_plans_in_list(client, user, plans):
+    client.force_login(user)
+    response = client.get(reverse('plan-list'))
+    assert response.status_code == 200
+    plan_list = response.context['object_list']
+    assert plan_list.count() == len(plans)
+    for plan in plans:
+        assert plan in plan_list

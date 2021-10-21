@@ -24,6 +24,7 @@ def profile(user, plan):
     profile = Profile.objects.create(user=user, weight=75, height=180, age=25, plan=plan)
     return profile
 
+
 @pytest.fixture
 def ingredient():
     ingredient = Ingredient.objects.create(name="jablko", fat=12, carbs=13, proteins=14)
@@ -37,21 +38,24 @@ def ingredients():
         ingredients.append(Ingredient.objects.create(name=f"jablko {x}", fat=x, carbs=x, proteins=x))
     return ingredients
 
+
 @pytest.fixture
 def meal(user):
     meal = Meal.objects.create(name="random posilek do testow", user=user)
     return meal
+
 
 @pytest.fixture
 def weight(meal, ingredient):
     weight = MealIngredientWeight.objects.create(meal=meal, ingredient=ingredient, weight=123)
     return weight
 
+
 @pytest.fixture
 def activities():
     activities = []
     for x in range(10):
-        activities.append(Activity.objects.create(name=f"activity_number_{x+1}", burned_kcal=x*20))
+        activities.append(Activity.objects.create(name=f"activity_number_{x + 1}", burned_kcal=x * 20))
     return activities
 
 
@@ -66,7 +70,17 @@ def time(activities, day):
     time = ActivityDayTime.objects.create(activity=activities[0], day=day, time_in_minutes=123)
     return time
 
+
 @pytest.fixture
 def plan():
     plan = Plan.objects.create(name="testplan1", description="testplan1desc", kcal_diff=300)
     return plan
+
+
+@pytest.fixture
+def plans():
+    plans = []
+    for x in range(10):
+        plans.append(Plan.objects.create(name=f"test_plan_nr_{x}", description=f"Opis planu nr {x}", kcal_diff=x * 145))
+
+    return plans

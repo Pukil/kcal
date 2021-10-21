@@ -216,6 +216,7 @@ class DeletePlanView(LoginRequiredMixin, DeleteView):
     login_url = '/login/'
     redirect_field_name = 'next'
     model = Plan
+    success_url = reverse_lazy('plan-list')
 
 ########### Activity #############
 class AddActivity(LoginRequiredMixin, CreateView):
