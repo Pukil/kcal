@@ -1,8 +1,10 @@
+import datetime
+
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 
-from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity
+from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity, Day, ActivityDayTime
 
 
 @pytest.fixture
@@ -51,3 +53,15 @@ def activities():
     for x in range(10):
         activities.append(Activity.objects.create(name=f"activity_number_{x+1}", burned_kcal=x*20))
     return activities
+
+
+@pytest.fixture
+def day(meal, profile, activities):
+    day = Day.objects.get(date=datetime.datetime.today(), profile=profile)
+    return day
+
+
+@pytest.fixture
+def time(activities, day):
+    time = ActivityDayTime.objects.create(activity=activities[0], day=day, time_in_minutes=123)
+    return time

@@ -61,5 +61,4 @@ urlpatterns = [
     path('edit_plan/<int:pk>/', EditPlanView.as_view(), name="edit-plan"),
     path('delete_plan/<int:pk>/', DeletePlanView.as_view(), name="delete-plan"),
     path('show_plans/', ShowAllPlans.as_view(), name="plan-list"),
-
 ]

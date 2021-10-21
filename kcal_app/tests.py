@@ -4,13 +4,20 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 # Create your tests here.
-from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity
+from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity, Day, ActivityDayTime
 
 
 ########## LOGIN ##########
 def test_login(client):
     response = client.get(reverse('login'))
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_login_with_login(client, user):
+    client.force_login(user)
+    response = client.get(reverse('login'))
+    assert response.status_code == 302
 
 
 @pytest.mark.django_db
@@ -47,6 +54,13 @@ def test_logout_get_no_login(client):
 def test_signup_get(client):
     response = client.get(reverse('signup'))
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_signup_get_login(client, user):
+    client.force_login(user)
+    response = client.get(reverse('signup'))
+    assert response.status_code == 302
 
 
 @pytest.mark.django_db
@@ -563,3 +577,83 @@ def test_delete_ingredient_login_post_deleted(client, activities, user):
     assert response.status_code == 302
     with pytest.raises(ObjectDoesNotExist):
         Activity.objects.get(pk=activities[0].pk)
+
+
+########## ACTIVITY TIME ##########
+@pytest.mark.django_db
+def test_activity_time_get_no_login(client, activities, day):
+    response = client.get(reverse("activity-time", kwargs={'id': activities[0].pk, 'pk': day.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_activity_time_get_login(client, activities, day):
+    client.force_login(day.profile.user)
+    response = client.get(reverse("activity-time", kwargs={'id': activities[0].pk, 'pk': day.pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_activity_time_post_login(client, activities, day):
+    client.force_login(day.profile.user)
+    data = {
+        'activity': activities[0].pk,
+        'day': day.pk,
+        'time_in_minutes': 123
+    }
+    response = client.post(reverse("activity-time", kwargs={'id': activities[0].pk, 'pk': day.pk}), data=data)
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_activity_time_post_login_exists(client, activities, day):
+    client.force_login(day.profile.user)
+    data = {
+        'activity': activities[0].pk,
+        'day': day.pk,
+        'time_in_minutes': 123
+    }
+    response = client.post(reverse("activity-time", kwargs={'id': activities[0].pk, 'pk': day.pk}), data=data)
+    assert response.status_code == 302
+    ActivityDayTime.objects.get(**data)
+
+
+########## EDIT ACTIVITY TIME ##########
+@pytest.mark.django_db
+def test_edit_activity_time_get_no_login(client, time):
+    response = client.get(reverse('edit-time', kwargs={'pk': time.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_edit_activity_time_get_login(client, profile, time):
+    client.force_login(profile.user)
+    response = client.get(reverse('edit-time', kwargs={'pk': time.pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_edit_activitY_time_post_login(client, profile, time, activities, day):
+    client.force_login(profile.user)
+    data = {
+        'activity': activities[1].pk,
+        'day': day.pk,
+        'time_in_minutes': 321
+    }
+    response = client.post(reverse('edit-time', kwargs={'pk': time.pk}), data=data)
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_edit_activitY_time_post_login_changed(client, profile, time, activities, day):
+    client.force_login(profile.user)
+    data = {
+        'activity': activities[1].pk,
+        'day': day.pk,
+        'time_in_minutes': 321
+    }
+    response = client.post(reverse('edit-time', kwargs={'pk': time.pk}), data=data)
+    assert response.status_code == 302
+    ActivityDayTime.objects.get(**data)
+
+########## DELETE ACTIVITY TIME ##########

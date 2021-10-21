@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, request, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -303,8 +303,11 @@ class DashboardView(LoginRequiredMixin, View):
 class LoginView(View):
 
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('/dashboard/')
         form = LoginForm()
         return render(request, 'form.html', {'form': form})
+
 
     def post(self, request):
         form = LoginForm(request.POST)
@@ -328,6 +331,8 @@ class LogoutView(View):
 
 class SignUp(View):
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('/dashboard/')
         form = AddUserAndProfileForm()
         return render(request, 'form.html', {'form': form})
 
