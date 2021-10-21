@@ -823,13 +823,13 @@ def test_date_get_login(client, day):
 
 
 ########## ADD PLAN ##########
-def test_add_plan_no_login(client):
+def test_add_plan_get_no_login(client):
     response = client.get(reverse("create-plan"))
     assert response.status_code == 302
 
 
 @pytest.mark.django_db
-def test_add_plan_login(client, user):
+def test_add_plan_get_login(client, user):
     client.force_login(user)
     response = client.get(reverse("create-plan"))
     assert response.status_code == 200
@@ -860,4 +860,39 @@ def test_add_plan_post_login_check_existing(client, user):
     Plan.objects.get(**data)
 
 ########## EDIT PLAN ##########
+@pytest.mark.django_db
+def test_edit_plan_get_no_login(client, plan):
+    response = client.get(reverse("edit-plan", kwargs={'pk': plan.pk}))
+    assert response.status_code == 302
 
+
+@pytest.mark.django_db
+def test_edit_plan_get_login(client, plan, user):
+    client.force_login(user)
+    response = client.get(reverse("edit-plan", kwargs={'pk': plan.pk}))
+    assert response.status_code == 200
+
+@pytest.mark.django_db
+def test_edit_plan_post_login(client, plan, user):
+    client.force_login(user)
+    data = {
+        'name': 'test edycji',
+        'description': "opis planu testowego edytowanego",
+        'kcal_diff': 350
+    }
+    response = client.post(reverse("edit-plan", kwargs={'pk': plan.pk}), data=data)
+    assert response.status_code == 302
+
+@pytest.mark.django_db
+def test_edit_plan_post_login_edited(client, plan, user):
+    client.force_login(user)
+    data = {
+        'name': 'test edycji',
+        'description': "opis planu testowego edytowanego",
+        'kcal_diff': 350
+    }
+    response = client.post(reverse("edit-plan", kwargs={'pk': plan.pk}), data=data)
+    assert response.status_code == 302
+    Plan.objects.get(**data)
+
+########## DELETE PLAN ##########
