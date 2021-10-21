@@ -4,7 +4,7 @@ import pytest
 from django.contrib.auth.models import User
 from django.test import Client
 
-from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity, Day, ActivityDayTime
+from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity, Day, ActivityDayTime, Plan
 
 
 @pytest.fixture
@@ -20,8 +20,8 @@ def client():
 
 
 @pytest.fixture
-def profile(user):
-    profile = Profile.objects.create(user=user)
+def profile(user, plan):
+    profile = Profile.objects.create(user=user, weight=75, height=180, age=25, plan=plan)
     return profile
 
 @pytest.fixture
@@ -65,3 +65,8 @@ def day(meal, profile, activities):
 def time(activities, day):
     time = ActivityDayTime.objects.create(activity=activities[0], day=day, time_in_minutes=123)
     return time
+
+@pytest.fixture
+def plan():
+    plan = Plan.objects.create(name="testplan1", description="testplan1desc", kcal_diff=300)
+    return plan

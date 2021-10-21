@@ -2,8 +2,8 @@ import datetime
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User, AnonymousUser
-from django.http import HttpResponse, request, HttpResponseRedirect, HttpRequest
+from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -16,7 +16,7 @@ from kcal_app.models import Ingredient, Meal, Profile, Activity, Day, Plan, Acti
 
 # TODO
 # 1 Zrobic bardziej user friendly
-# 2 Szata graficzna
+
 
 
 class LandingPageView(View):

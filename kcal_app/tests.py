@@ -6,7 +6,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 # Create your tests here.
-from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity, Day, ActivityDayTime
+from kcal_app.models import Profile, Ingredient, Meal, MealIngredientWeight, Activity, Day, ActivityDayTime, Plan
 
 
 ########## LOGIN ##########
@@ -573,7 +573,7 @@ def test_delete_activity_login_post(client, activities, user):
 
 
 @pytest.mark.django_db
-def test_delete_ingredient_login_post_deleted(client, activities, user):
+def test_delete_activity_login_post_deleted(client, activities, user):
     client.force_login(user)
     response = client.post(reverse("delete-activity", kwargs={'pk': activities[0].pk}))
     assert response.status_code == 302
@@ -716,6 +716,7 @@ def test_add_day_post_login(client, profile, meal, activities):
     response = client.post(reverse('add-day'), data=data)
     assert response.status_code == 302
 
+
 @pytest.mark.django_db
 def test_add_day_post_login_exists(client, profile, meal, activities):
     client.force_login(profile.user)
@@ -730,6 +731,7 @@ def test_add_day_post_login_exists(client, profile, meal, activities):
     response = client.post(reverse('add-day'), data=data)
     assert response.status_code == 302
     Day.objects.get(date=data['date'])
+
 
 ########## EDIT DAY ##########
 @pytest.mark.django_db
@@ -777,3 +779,85 @@ def test_edit_day_post_login_changes(client, profile, meal, activities, day):
 
 
 ########## DELETE DAY ##########
+@pytest.mark.django_db
+def test_delete_day_login(client, day, profile):
+    client.force_login(profile.user)
+    response = client.get(reverse("delete-day", kwargs={'pk': day.pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_delete_day_no_login(client, day):
+    response = client.get(reverse("delete-day", kwargs={'pk': day.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_day_login_post(client, day, profile):
+    client.force_login(profile.user)
+    response = client.post(reverse("delete-day", kwargs={'pk': day.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_day_login_post_deleted(client, day, profile):
+    client.force_login(profile.user)
+    response = client.post(reverse("delete-day", kwargs={'pk': day.pk}))
+    assert response.status_code == 302
+    with pytest.raises(ObjectDoesNotExist):
+        Day.objects.get(pk=day.pk)
+
+
+########## DATE ##########
+@pytest.mark.django_db
+def test_date_get_no_login(client, day):
+    response = client.get(reverse('day-info', kwargs={'pk': day.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_date_get_login(client, day):
+    client.force_login(day.profile.user)
+    response = client.get(reverse('day-info', kwargs={'pk': day.pk}))
+    assert response.status_code == 200
+
+
+########## ADD PLAN ##########
+def test_add_plan_no_login(client):
+    response = client.get(reverse("create-plan"))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_add_plan_login(client, user):
+    client.force_login(user)
+    response = client.get(reverse("create-plan"))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_add_plan_login_post(client, user):
+    client.force_login(user)
+    data = {
+        'name': 'plantestowy',
+        'description': "opis planu testowego",
+        'kcal_diff': 200
+    }
+    response = client.post(reverse("create-plan"), data=data)
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_add_plan_post_login_check_existing(client, user):
+    client.force_login(user)
+    data = {
+        'name': 'plantestowy',
+        'description': "opis planu testowego",
+        'kcal_diff': 250
+    }
+    response = client.post(reverse("create-plan"), data=data)
+    assert response.status_code == 302
+    Plan.objects.get(**data)
+
+########## EDIT PLAN ##########
+
