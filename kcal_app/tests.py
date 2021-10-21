@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase, Client
@@ -656,4 +658,77 @@ def test_edit_activitY_time_post_login_changed(client, profile, time, activities
     assert response.status_code == 302
     ActivityDayTime.objects.get(**data)
 
+
 ########## DELETE ACTIVITY TIME ##########
+@pytest.mark.django_db
+def test_delete_activity_time_get_no_login(client, time):
+    response = client.get(reverse('delete-time', kwargs={'pk': time.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_activity_time_get_login(client, profile, time):
+    client.force_login(profile.user)
+    response = client.get(reverse('delete-time', kwargs={'pk': time.pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_delete_activitY_time_post_login(client, profile, time):
+    client.force_login(profile.user)
+    response = client.post(reverse('delete-time', kwargs={'pk': time.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_delete_activitY_time_post_login_deleted(client, profile, time, activities, day):
+    client.force_login(profile.user)
+    response = client.post(reverse('delete-time', kwargs={'pk': time.pk}))
+    assert response.status_code == 302
+    with pytest.raises(ObjectDoesNotExist):
+        ActivityDayTime.objects.get(pk=time.pk)
+
+
+########## ADD DAY ##########
+def test_add_day_get_no_login(client):
+    response = client.get(reverse('add-day'))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_add_day_get_login(client, user):
+    client.force_login(user)
+    response = client.get(reverse('add-day'))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_add_day_post_login(client, profile, meal, activities):
+    client.force_login(profile.user)
+    data = {
+        'date': '2021-05-21',
+        'meals': meal.pk,
+        'activity': activities[0].pk,
+        'profile': profile.pk,
+        'base_kcal': 2000,
+        'day_weight': 90
+    }
+    response = client.post(reverse('add-day'), data=data)
+    assert response.status_code == 302
+
+@pytest.mark.django_db
+def test_add_day_post_login_exists(client, profile, meal, activities):
+    client.force_login(profile.user)
+    data = {
+        'date': '2021-05-22',
+        'meals': meal.pk,
+        'activity': activities[0].pk,
+        'profile': profile.pk,
+        'base_kcal': 2000,
+        'day_weight': 90
+    }
+    response = client.post(reverse('add-day'), data=data)
+    assert response.status_code == 302
+    Day.objects.get(date=data['date'])
+
+########## EDIT DAY ##########
