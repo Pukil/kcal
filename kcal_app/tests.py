@@ -732,3 +732,48 @@ def test_add_day_post_login_exists(client, profile, meal, activities):
     Day.objects.get(date=data['date'])
 
 ########## EDIT DAY ##########
+@pytest.mark.django_db
+def test_edit_day_get_no_login(client, day):
+    response = client.get(reverse('edit-day', kwargs={'pk': day.pk}))
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_edit_day_get_login(client, profile, day):
+    client.force_login(profile.user)
+    response = client.get(reverse('edit-day', kwargs={'pk': day.pk}))
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_edit_day_post_login(client, profile, meal, activities, day):
+    client.force_login(profile.user)
+    data = {
+        'date': day.date,
+        'meals': meal.pk,
+        'activity': activities[0].pk,
+        'profile': profile.pk,
+        'base_kcal': 2000,
+        'day_weight': 75
+    }
+    response = client.post(reverse('edit-day', kwargs={'pk': day.pk}), data=data)
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
+def test_edit_day_post_login_changes(client, profile, meal, activities, day):
+    client.force_login(profile.user)
+    data = {
+        'date': day.date,
+        'meals': meal.pk,
+        'activity': activities[0].pk,
+        'profile': profile.pk,
+        'base_kcal': 2000,
+        'day_weight': 75
+    }
+    response = client.post(reverse('edit-day', kwargs={'pk': day.pk}), data=data)
+    assert response.status_code == 302
+    assert Day.objects.get(date=data['date']).day_weight == 75
+
+
+########## DELETE DAY ##########
